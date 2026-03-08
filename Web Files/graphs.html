@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CO2 Emission Analysis — Graphs</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+
+        /* top bar: heading left, dropdown right */
+        .title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            /* must be above the content below */
+            position: relative;
+            z-index: 200;
+        }
+
+        /* dropdown wrapper — must sit ABOVE the content area */
+        .select-wrapper {
+            position: relative;
+            min-width: 280px;
+            z-index: 200;
+        }
+
+        .select-btn {
+            width: 100%;
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 10px 18px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            transition: var(--ease);
+        }
+
+        .select-btn:hover,
+        .select-btn.is-open {
+            background: var(--accent);
+            color: #050505;
+            box-shadow: 0 0 14px var(--accent-glow);
+        }
+
+        /* dropdown panel — floats over everything */
+        .options-list {
+            display: none;
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            width: 100%;
+            background: var(--surface);
+            border: 1px solid var(--border-hover);
+            border-radius: 4px;
+            box-shadow: 0 8px 28px rgba(0,0,0,0.8);
+            overflow: hidden;
+            /* float above everything on the page */
+            z-index: 9999;
+        }
+
+        .options-list.show { display: block; }
+
+        .option-item {
+            padding: 12px 18px;
+            cursor: pointer;
+            color: var(--muted);
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.15s, color 0.15s;
+        }
+
+        .option-item:last-child { border-bottom: none; }
+        .option-item:hover { background: var(--surface2); color: var(--accent); }
+
+        /* fuel sub-group header */
+        .group-header {
+            padding: 12px 18px;
+            cursor: pointer;
+            color: var(--accent);
+            font-size: 0.85rem;
+            font-weight: 700;
+            border-bottom: 1px solid var(--border);
+            background: rgba(29,185,84,0.06);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background 0.15s;
+            user-select: none;
+        }
+
+        .group-header:hover { background: rgba(29,185,84,0.12); }
+        .group-arrow { font-size: 0.7rem; transition: transform 0.2s; }
+        .group-header.open .group-arrow { transform: rotate(180deg); }
+
+        .sub-items { display: none; }
+        .sub-items.open { display: block; }
+
+        .sub-option-item {
+            padding: 10px 18px 10px 32px;
+            cursor: pointer;
+            color: var(--muted);
+            font-size: 0.82rem;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.15s, color 0.15s;
+        }
+
+        .sub-option-item:last-child { border-bottom: none; }
+        .sub-option-item:hover { background: var(--surface2); color: var(--accent); }
+
+        .sub-option-item::before {
+            content: '';
+            width: 5px; height: 5px;
+            border-radius: 50%;
+            background: var(--accent);
+            flex-shrink: 0;
+        }
+
+        /* content area below the title row — no z-index so dropdown sits above it */
+        .content-area {
+            display: flex;
+            gap: 28px;
+            align-items: flex-start;
+            position: relative;
+            z-index: 1;
+        }
+
+        .chart-box {
+            flex-shrink: 0;
+            width: 62%;
+            border: 3px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+            background: #000;
+        }
+
+        /* override the global grayscale filter from style.css */
+        .chart-box img {
+            width: 100%;
+            height: auto;
+            display: block;
+            filter: none !important;
+        }
+
+        .analysis-text {
+            flex: 1;
+            font-size: 0.92rem;
+            line-height: 1.85;
+            color: var(--muted);
+        }
+
+        .analysis-text p { color: var(--muted); }
+        .analysis-text strong { color: var(--text); }
+
+    </style>
+</head>
+<body>
+
+<header class="site-header">
+    <div class="site-logo">CO2 <span>/ Analysis</span></div>
+    <nav class="nav-links">
+        <a href="index.html"   class="nav-btn"><i class="fas fa-home"></i> <span>Home</span></a>
+        <a href="graphs.html"  class="nav-btn active"><i class="fas fa-chart-bar"></i> <span>Graphs</span></a>
+        <a href="sources.html" class="nav-btn"><i class="fas fa-list"></i> <span>Sources</span></a>
+    </nav>
+</header>
+
+<div class="container-wide">
+
+    <!-- title + dropdown in one row, high z-index so dropdown floats above chart -->
+    <div class="title-row fade-in">
+        <div>
+            <h1>Emission <span class="accent">Analysis</span></h1>
+        </div>
+        <div class="select-wrapper">
+            <button class="select-btn" id="selectBtn" onclick="toggleMenu()">
+                <span id="btnLabel">Select a Graph…</span>
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="options-list" id="menuList"></div>
+        </div>
+    </div>
+
+    <!-- chart image + analysis text  -->
+    <div class="content-area fade-in">
+        <div class="chart-box" id="chartBox">
+            <img id="chartImg" src="" alt="Graph">
+        </div>
+        <div class="analysis-text" id="analysisText">
+            <p>Select a graph from the menu above to see the analysis.</p>
+        </div>
+    </div>
+
+    <div class="footer-bar fade-in">
+        <p>CO2 Emission Analysis &nbsp;·&nbsp; Graphs</p>
+        <div class="footer-accent"></div>
+        <p>Data: Kaggle &amp; Climate Trace</p>
+    </div>
+
+</div>
+
+<script>
+    // chart definitions with title, file path, and analysis text for each graph
+    const charts = {
+        scatter: {
+            title: "Engine Size vs. CO2",
+            file:  "Resources/Graph_Engine_Size.png",
+            text:  `<p><strong>Primary Findings:</strong> Strong positive linear relationship between engine size and CO2 emissions.</p>
+                    <p>The graph shows a positive linear relationship between engine size and CO2 emissions. As engine size increases, emissions rise at a fairly steady rate. The line of best fit, y = 33.81x + 147, suggests that every increase in emissions is 34 per L. Overall, there is a strong upward trend. This suggests that larger engines burn more fuel per kilometre, so the emissions increase almost proportionally. However, many points are below the line of best fit, showing that companies can design large yet efficient engines. It highlights that engine size alone doesn't fully explain emissions — companies can build efficient cars, but many choose not to.</p>`
+        },
+        cylinders: {
+            title: "Cylinders Distribution",
+            file:  "Resources/Graph_Cylinders.png",
+            text:  `<p><strong>Primary Findings:</strong> CO₂ emissions rise as cylinder count increases, with especially large jumps beyond six cylinders.</p>
+                    <p>As the number of cylinders increases, CO2 emissions increase generally. 4-cylinder cars show high variance, suggesting the manufacturer's design is a strong determining factor in eco-friendliness. The trend of higher cylinders equalling higher emissions holds clearly beyond 6 cylinders, with each distribution positively skewed.</p>`
+        },
+        transmission: {
+            title: "Transmission Types",
+            file:  "Resources/Graph_Transmission.png",
+            text:  `<p><strong>Primary Findings:</strong> Transmission type significantly impacts CO2 emissions.</p>
+                    <p>placeholder</p>`
+        },
+        comparison: {
+            title: "Fuel Type Comparison",
+            file:  "Resources/Graph_Comparison_Ranked.png",
+            text:  `<p><strong>Primary Findings:</strong> Clear differences in emissions between fuel types at equivalent consumption rates.</p>
+                    <p>placeholder</p>`
+        }
+    };
+
+    const fuelCharts = {
+        ethanol: {
+            title: "E10 / Ethanol",
+            file:  "Resources/Graph_Trend_E10_Ethanol.png",
+            text:  `<p><strong>Primary Findings:</strong> E10/Ethanol has the most favourable CO2 profile of all petrol fuel types.</p>
+                    <p>placeholder</p>`
+        },
+        premium: {
+            title: "Premium / Special",
+            file:  "Resources/Graph_Trend_Premium_Special.png",
+            text:  `<p><strong>Primary Findings:</strong> Premium fuel vehicles tend to have larger engines and higher absolute emissions.</p>
+                    <p>placeholder</p>`
+        },
+        regular: {
+            title: "U91 / Regular",
+            file:  "Resources/Graph_Trend_U91_Regular.png",
+            text:  `<p><strong>Primary Findings:</strong> Regular 91 octane is the most represented fuel type in the dataset.</p>
+                    <p>placeholder</p>`
+        },
+        diesel: {
+            title: "Diesel",
+            file:  "Resources/Graph_Trend_Diesel.png",
+            text:  `<p><strong>Primary Findings:</strong> Diesel shows a strong linear correlation between highway consumption and CO2.</p>
+                    <p>placeholder</p>`
+        }
+    };
+
+    // dropdown
+    const menuList     = document.getElementById('menuList');
+    const btnLabel     = document.getElementById('btnLabel');
+    const chartImg     = document.getElementById('chartImg');
+    const analysisText = document.getElementById('analysisText');
+
+    // regular items
+    Object.values(charts).forEach(cfg => {
+        const item = document.createElement('div');
+        item.className   = 'option-item';
+        item.textContent = cfg.title;
+        item.onclick     = () => loadChart(cfg);
+        menuList.appendChild(item);
+    });
+
+    // fuel group header
+    const groupHeader = document.createElement('div');
+    groupHeader.className = 'group-header';
+    groupHeader.innerHTML = `<span>Fuel Types</span><i class="fas fa-chevron-down group-arrow"></i>`;
+    menuList.appendChild(groupHeader);
+
+    // fuel sub-items
+    const subItems = document.createElement('div');
+    subItems.className = 'sub-items';
+    Object.values(fuelCharts).forEach(cfg => {
+        const item = document.createElement('div');
+        item.className   = 'sub-option-item';
+        item.textContent = cfg.title;
+        item.onclick     = () => loadChart(cfg);
+        subItems.appendChild(item);
+    });
+    menuList.appendChild(subItems);
+
+    groupHeader.addEventListener('click', e => {
+        e.stopPropagation();
+        groupHeader.classList.toggle('open');
+        subItems.classList.toggle('open');
+    });
+
+    // dropdown toggle
+    function toggleMenu() {
+        menuList.classList.toggle('show');
+        document.getElementById('selectBtn').classList.toggle('is-open');
+    }
+
+    // close when clicking anywhere outside
+    window.addEventListener('click', e => {
+        if (!e.target.closest('.select-wrapper')) {
+            menuList.classList.remove('show');
+            document.getElementById('selectBtn').classList.remove('is-open');
+        }
+    });
+
+    // chart loading function to update image, alt text, analysis, and close menu
+    function loadChart(cfg) {
+        btnLabel.textContent   = cfg.title;
+        chartImg.src           = cfg.file;
+        chartImg.alt           = cfg.title;
+        analysisText.innerHTML = cfg.text;
+        menuList.classList.remove('show');
+        document.getElementById('selectBtn').classList.remove('is-open');
+    }
+
+    // show first chart on load
+    loadChart(Object.values(charts)[0]);
+</script>
+
+</body>
+</html>

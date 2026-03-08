@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CO2 Emission Analysis — Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-header">
+    <div class="site-logo">CO2 Emission<span>/ Analysis</span></div>
+    <nav class="nav-links">
+        <a href="index.html"   class="nav-btn active"><i class="fas fa-home"></i> <span>Home</span></a>
+        <a href="graphs.html"  class="nav-btn"><i class="fas fa-chart-bar"></i> <span>Graphs</span></a>
+        <a href="sources.html" class="nav-btn"><i class="fas fa-list"></i> <span>Sources</span></a>
+    </nav>
+</header>
+
+<div class="container">
+
+    <div class="page-intro fade-in">
+        <div class="tag">Our Ideology</div>
+        <h1>Vehicle <span class="accent">Emissions</span><br>Analysis</h1>
+        <p>Exploring which car features drive CO2 output, from engine size to fuel type and transmission.</p>
+    </div>
+
+    <h2 class="fade-in">Problem Statement</h2>
+    <div class="card fade-in">
+        <p>What are the most influential car features that affect CO2 emissions the most?</p>
+    </div>
+
+    <h2 class="fade-in">Justification</h2>
+    <div class="card fade-in">
+        <p>This question is being researched to help inform consumers when purchasing a car, as their choices can significantly impact the environment. Many features — engine size, fuel type, fuel consumption, and cylinder count — all affect CO2 emissions. Our research compares these factors to help buyers make more environmentally informed decisions. As climate change worsens, reducing personal emissions matters. This work also serves as an incentive for manufacturers to build cleaner, more fuel-efficient vehicles.</p>
+    </div>
+
+    <h2>Data Used</h2>
+
+    <h3>Dataset 1</h3>
+    <div class="card fade-in">
+        <p><strong style="color:#fff">Kaggle — Car CO2 Emission</strong></p>
+        <p>Sourced from Kaggle, derived from official Canadian government records collected over 7 years (2014–2020). Includes manufacturer, model, engine size, cylinders, transmission, fuel type, and city/highway fuel consumption. Arguably the most reliable dataset used, as all data comes directly from the Canadian government.</p>
+    </div>
+
+    <h3>Dataset 2</h3>
+    <div class="card fade-in">
+        <p><strong style="color:#fff">Kaggle — Vehicle Emission Dataset</strong></p>
+        <p>Also from Kaggle, focusing on how conditions like vehicle age affect emissions. Lists engine size, fuel type, max speed, acceleration, and manufacturer. Used to explore how emissions differ based on age and usage, and to examine whether CO2 increases with engine aging in high-mileage vehicles.</p>
+    </div>
+
+    <h3>Dataset 3</h3>
+    <div class="card fade-in">
+        <p><strong style="color:#fff">Climate Trace</strong></p>
+        <p>Sourced from Climate Trace, an independent greenhouse gas tracking organisation. Pulled from their transportation section and cleaned to retain only cars. Provides detailed specs and emissions-per-litre data, useful for cross-referencing the other datasets.</p>
+    </div>
+
+    <div class="footer-bar fade-in">
+        <p>CO2 Emission Analysis &nbsp;·&nbsp; Homepage</p>
+        <div class="footer-accent"></div>
+        <p>Data: Kaggle &amp; Climate Trace</p>
+    </div>
+
+</div>
+
+</body>
+</html>
